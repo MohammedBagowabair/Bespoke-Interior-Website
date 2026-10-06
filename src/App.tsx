@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useI18n, asset } from './i18n'
 import { Reveal } from './Reveal'
+import { useActiveSection, useDialogFlag, useMenu, useSwipe } from './hooks'
 import { type Content, type Project, type SectorKey, projects, clients, WA, PHONE, EMAIL, FB, IG, MAPS, PITCH_WA } from './content'
 
 const wa = (text: string) => `https://wa.me/${WA}?text=${encodeURIComponent(text)}`
@@ -31,7 +32,7 @@ function Logo({ small = false }: { small?: boolean }) {
   return (
     <span className="flex flex-col leading-none">
       <span className={`font-display font-medium tracking-[0.08em] ${small ? 'text-xl' : 'text-[1.55rem]'}`}>BESPOKE</span>
-      <span className="mt-1 text-[8.5px] font-semibold tracking-[0.62em] text-mist">INTERIOR</span>
+      {' '}<span className="mt-1 text-[8.5px] font-semibold tracking-[0.62em] text-mist">INTERIOR</span>
     </span>
   )
 }
@@ -40,27 +41,29 @@ function Header() {
   const { c, lang, setLang } = useC()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const btnRef = useRef<HTMLButtonElement>(null)
+  const closeMenu = useCallback(() => setOpen(false), [])
+  useMenu(open, closeMenu, btnRef)
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 24)
     on()
     window.addEventListener('scroll', on, { passive: true })
     return () => window.removeEventListener('scroll', on)
   }, [])
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : ''
-  }, [open])
   const links: [string, string][] = [
     ['sectors', c.nav.sectors], ['projects', c.nav.projects], ['services', c.nav.services],
     ['process', c.nav.process], ['studio', c.nav.studio], ['contact', c.nav.contact],
   ]
+  const active = useActiveSection(links.map(([id]) => id))
   const toggle = () => setLang(lang === 'en' ? 'ms' : 'en')
   return (
     <header className={`fixed inset-x-0 top-0 z-40 transition-colors duration-300 ${scrolled || open ? 'glass border-b border-white/5' : ''}`}>
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
-        <a href="#top" className="tap flex items-center" aria-label="Bespoke Interior — home"><Logo /></a>
-        <nav className="hidden items-center gap-7 lg:flex" aria-label="Main">
+        <a href="#top" className="tap flex items-center rounded-md"><Logo /></a>
+        <nav className="hidden items-center gap-7 lg:flex" aria-label={c.a11y.main}>
           {links.map(([id, label]) => (
-            <a key={id} href={`#${id}`} className="py-3 text-[13px] font-medium text-bone/75 transition hover:text-teal">{label}</a>
+            <a key={id} href={`#${id}`} aria-current={active === id ? 'true' : undefined}
+              className={`nav-link relative py-3 text-[13px] font-medium transition hover:text-teal ${active === id ? 'text-bone' : 'text-bone/70'}`}>{label}</a>
           ))}
         </nav>
         <div className="flex items-center gap-2">
@@ -70,7 +73,7 @@ function Header() {
           <a href={wa(c.contact.waText)} target="_blank" rel="noopener" className="tap hidden items-center gap-2 rounded-full bg-teal px-5 text-[13px] font-bold text-ink transition hover:bg-bone sm:inline-flex">
             <WaIcon className="h-4 w-4" /> {c.contact.wa}
           </a>
-          <button onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="mnav" aria-label={open ? c.close : c.menu} className="tap grid place-items-center rounded-full border border-white/15 lg:hidden">
+          <button ref={btnRef} onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="mnav" aria-label={open ? c.close : c.menu} className="tap grid place-items-center rounded-full border border-white/15 lg:hidden">
             <span className="relative block h-3 w-5">
               <span className={`absolute left-0 top-0 h-0.5 w-5 bg-bone transition ${open ? 'translate-y-[5px] rotate-45' : ''}`} />
               <span className={`absolute bottom-0 left-0 h-0.5 w-5 bg-bone transition ${open ? '-translate-y-[5px] -rotate-45' : ''}`} />
@@ -79,9 +82,10 @@ function Header() {
         </div>
       </div>
       {open && (
-        <nav id="mnav" className="fade-in h-[calc(100dvh-4rem)] overflow-y-auto border-t border-white/5 bg-ink px-5 pb-10 pt-4 lg:hidden" aria-label="Mobile">
+        <nav id="mnav" className="fade-in h-[calc(100dvh-4rem)] overflow-y-auto border-t border-white/5 bg-ink px-5 pb-10 pt-4 lg:hidden" aria-label={c.a11y.mobile}>
           {links.map(([id, label], i) => (
-            <a key={id} href={`#${id}`} onClick={() => setOpen(false)} className="flex min-h-[56px] items-center justify-between border-b border-white/5 font-display text-3xl">
+            <a key={id} href={`#${id}`} onClick={() => setOpen(false)} aria-current={active === id ? 'true' : undefined}
+              className={`flex min-h-[56px] items-center justify-between border-b border-white/5 font-display text-3xl transition active:text-teal ${active === id ? 'text-teal' : ''}`}>
               {label}<span className="font-sans text-xs text-mist">0{i + 1}</span>
             </a>
           ))}
@@ -95,7 +99,7 @@ function Header() {
 }
 
 function Hero() {
-  const { c } = useC()
+  const { c, lang } = useC()
   const [i, setI] = useState(0)
   const [paused, setPaused] = useState(false)
   const [mounted, setMounted] = useState<boolean[]>([true, false, false, false])
@@ -122,7 +126,7 @@ function Hero() {
       <div className="mx-auto grid max-w-7xl gap-10 px-5 pb-14 pt-10 sm:px-8 lg:grid-cols-12 lg:gap-12 lg:pb-24 lg:pt-16">
         <div className="lg:col-span-6 lg:pt-6">
           <p className="kicker">{c.hero.eyebrow}</p>
-          <h1 className="mt-6 font-display font-medium leading-[0.98] tracking-[-0.02em]" style={{ fontSize: 'clamp(2.55rem, 7.4vw, 5.4rem)' }}>
+          <h1 className="mt-6 font-display font-medium leading-[0.98] tracking-[-0.02em]" style={{ fontSize: lang === 'ms' ? 'clamp(2.4rem, 6.4vw, 4.5rem)' : 'clamp(2.55rem, 7vw, 5.1rem)' }}>
             {c.hero.title1}{' '}
             <em className="text-teal">{c.hero.title2}</em>
           </h1>
@@ -210,7 +214,7 @@ function Sectors() {
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <Reveal className="grid gap-6 lg:grid-cols-12">
           <div className="lg:col-span-5">
-            <p className="kicker !text-teal-deep">{c.sectors.kicker}</p>
+            <p className="kicker !text-teal-ink">{c.sectors.kicker}</p>
             <h2 className="h2 mt-4">{c.sectors.title}</h2>
           </div>
           <p className="max-w-xl self-end text-[15.5px] leading-relaxed text-ink/70 lg:col-span-6 lg:col-start-7">{c.sectors.lead}</p>
@@ -220,10 +224,10 @@ function Sectors() {
             <li key={t} className="group relative border-b border-ink/15 py-6 sm:px-5 sm:[&:nth-child(odd)]:border-r lg:[&:nth-child(odd)]:border-r-0 lg:[&:not(:nth-child(3n))]:border-r">
               <span className="absolute left-0 top-0 h-0.5 w-0 bg-teal-deep transition-all duration-500 group-hover:w-full" />
               <div className="flex items-baseline gap-4">
-                <span className="font-display text-sm text-teal-deep">{String(k + 1).padStart(2, '0')}</span>
+                <span className="font-display text-sm text-teal-ink">{String(k + 1).padStart(2, '0')}</span>
                 <div>
                   <h3 className="font-display text-2xl">{t}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-ink/65">{d}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-ink/70">{d}</p>
                 </div>
               </div>
             </li>
@@ -234,9 +238,11 @@ function Sectors() {
   )
 }
 
-function Sheet({ p, onClose, onNav }: { p: Project; onClose: () => void; onNav: (d: number) => void }) {
+function Sheet({ p, pos, onClose, onNav }: { p: Project; pos: [number, number]; onClose: () => void; onNav: (d: number) => void }) {
   const { c } = useC()
   const closeRef = useRef<HTMLButtonElement>(null)
+  const swipe = useSwipe((d) => onNav(d))
+  useDialogFlag()
   useEffect(() => {
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
@@ -257,7 +263,7 @@ function Sheet({ p, onClose, onNav }: { p: Project; onClose: () => void; onNav: 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-end lg:items-stretch" role="dialog" aria-modal="true" aria-label={`${p.client} — ${p.name}`}>
       <button aria-label={c.close} onClick={onClose} className="fade-in absolute inset-0 bg-black/70" />
-      <div className="sheet-enter relative flex max-h-[92dvh] w-full flex-col overflow-y-auto rounded-t-3xl bg-graphite lg:max-h-none lg:w-[560px] lg:rounded-none">
+      <div {...swipe} className="sheet-enter relative flex max-h-[92dvh] w-full flex-col overflow-y-auto rounded-t-3xl bg-graphite lg:max-h-none lg:w-[560px] lg:rounded-none">
         <div className="sticky top-0 z-10 flex items-center justify-between bg-graphite/95 px-5 py-3">
           <span className="mx-auto h-1 w-10 rounded-full bg-white/20 lg:hidden" aria-hidden />
           <button ref={closeRef} onClick={onClose} className="tap absolute right-3 top-1.5 grid place-items-center rounded-full bg-ink/60 text-2xl text-bone/90 hover:text-teal" aria-label={c.close}>×</button>
@@ -274,9 +280,9 @@ function Sheet({ p, onClose, onNav }: { p: Project; onClose: () => void; onNav: 
             <WaIcon /> {c.work.sheetCta}
           </a>
           <div className="flex items-center justify-between">
-            <button onClick={() => onNav(-1)} className="tap rounded-full border border-white/15 px-5 text-sm font-semibold hover:border-teal" aria-label="Previous">←</button>
-            <p className="text-[11px] text-bone/45">{c.hero.photo}</p>
-            <button onClick={() => onNav(1)} className="tap rounded-full border border-white/15 px-5 text-sm font-semibold hover:border-teal" aria-label="Next">→</button>
+            <button onClick={() => onNav(-1)} className="tap rounded-full border border-white/15 px-5 text-sm font-semibold hover:border-teal hover:text-teal" aria-label={c.a11y.prev}>←</button>
+            <p className="text-center text-[11px] text-bone/60">{c.work.count.replace('{n}', String(pos[0])).replace('{t}', String(pos[1]))} · {c.hero.photo}</p>
+            <button onClick={() => onNav(1)} className="tap rounded-full border border-white/15 px-5 text-sm font-semibold hover:border-teal hover:text-teal" aria-label={c.a11y.next}>→</button>
           </div>
         </div>
       </div>
@@ -306,7 +312,7 @@ function Work() {
             <p className="kicker">{c.work.kicker}</p>
             <h2 className="h2 mt-4 max-w-2xl">{c.work.title}</h2>
           </div>
-          <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0" role="group" aria-label="Filter">
+          <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0" role="group" aria-label={c.a11y.filter}>
             {keys.map((k) => {
               const n = k === 'all' ? projects.length : projects.filter((p) => p.sector === k).length
               return (
@@ -318,14 +324,18 @@ function Work() {
             })}
           </div>
         </Reveal>
-        <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {list.map((p, k) => (
+        <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:auto-rows-[minmax(300px,26vw)] lg:grid-cols-3 xl:auto-rows-[340px]">
+          {list.map((p, k) => {
+            const big = (k === 0 && list.length !== 2)
+            // 7 projects: big 2x2, then a wide card on rows 3 and 4 so no row is left with a single orphan
+            const wide = list.length === 7 && (k === 3 || k === 6)
+            return (
             <button key={p.id} onClick={() => setOpenId(p.id)}
-              className={`card fade-in group relative overflow-hidden rounded-2xl bg-graphite text-left ${k === 0 && list.length > 2 ? 'sm:col-span-2 sm:row-span-2' : ''}`}>
-              <img src={src(p.img, k === 0 && list.length > 2 ? 1200 : 640)} srcSet={srcSet(p.img)}
-                sizes={k === 0 && list.length > 2 ? '(min-width:1024px) 66vw, (min-width:640px) 100vw, 92vw' : '(min-width:1024px) 33vw, (min-width:640px) 50vw, 92vw'}
+              className={`card fade-in group relative overflow-hidden rounded-2xl bg-graphite text-left ${big ? 'sm:col-span-2 lg:row-span-2' : ''} ${wide ? 'lg:col-span-2' : ''}`}>
+              <img src={src(p.img, big || wide ? 1200 : 640)} srcSet={srcSet(p.img)}
+                sizes={big ? '(min-width:1024px) 66vw, (min-width:640px) 100vw, 92vw' : wide ? '(min-width:1024px) 66vw, (min-width:640px) 50vw, 92vw' : '(min-width:1024px) 33vw, (min-width:640px) 50vw, 92vw'}
                 width={1024} height={1024} loading="lazy" decoding="async" alt={`${p.client} — ${p.name}`}
-                className="card-img aspect-[4/3] h-full w-full object-cover sm:aspect-square" />
+                className={`card-img aspect-[4/3] h-full w-full object-cover lg:aspect-auto ${big ? 'sm:aspect-[16/10]' : 'sm:aspect-square'}`} />
               <span className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/20 to-transparent" />
               <span className="absolute inset-x-5 bottom-5 flex items-end justify-between gap-4">
                 <span>
@@ -336,11 +346,22 @@ function Work() {
               </span>
               <span className="sr-only">{c.work.view}</span>
             </button>
-          ))}
+            )
+          })}
+          {list.length < 3 && (
+            <div className={`flex flex-col justify-end gap-4 rounded-2xl border border-white/10 bg-graphite p-6 sm:col-span-2 lg:col-span-1 ${list.length === 1 ? 'lg:row-span-2' : ''}`}>
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.22em] text-teal">{filter !== 'all' && c.sectorNames[filter]}</p>
+              <p className="font-display text-2xl leading-tight sm:text-3xl">{c.work.ctaTitle}</p>
+              <p className="text-sm leading-relaxed text-bone/70">{c.work.ctaText}</p>
+              <a href={wa(c.contact.waText)} target="_blank" rel="noopener" className="inline-flex min-h-[48px] items-center justify-center gap-2 self-start rounded-full bg-teal px-6 text-sm font-bold text-ink transition hover:bg-bone">
+                <WaIcon className="h-4 w-4" /> {c.work.ctaBtn}
+              </a>
+            </div>
+          )}
         </div>
         <p className="mt-6 text-xs text-mist">{c.work.note}</p>
       </div>
-      {open && <Sheet p={open} onClose={close} onNav={nav} />}
+      {open && <Sheet p={open} pos={[list.findIndex((p) => p.id === open.id) + 1, list.length]} onClose={close} onNav={nav} />}
     </section>
   )
 }
@@ -352,7 +373,7 @@ function Services() {
     <section id="services" className="bg-bone py-20 text-ink sm:py-28">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <Reveal>
-          <p className="kicker !text-teal-deep">{c.services.kicker}</p>
+          <p className="kicker !text-teal-ink">{c.services.kicker}</p>
           <h2 className="h2 mt-4">{c.services.title}</h2>
         </Reveal>
         <div className="mt-12 border-t border-ink/15">
@@ -360,10 +381,10 @@ function Services() {
             const on = open === k
             return (
               <div key={s.t} className="border-b border-ink/15">
-                <button onClick={() => setOpen(on ? -1 : k)} aria-expanded={on} className="group flex min-h-[72px] w-full items-center gap-4 py-6 text-left sm:gap-8">
-                  <span className="font-display text-sm text-teal-deep">0{k + 1}</span>
-                  <span className={`flex-1 font-display leading-tight transition ${on ? 'text-ink' : 'text-ink/70 group-hover:text-ink'}`} style={{ fontSize: 'clamp(1.6rem, 4vw, 2.75rem)' }}>{s.t}</span>
-                  <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-full border text-xl transition ${on ? 'rotate-45 border-ink bg-ink text-bone' : 'border-ink/25'}`} aria-hidden>+</span>
+                <button onClick={() => setOpen(on ? -1 : k)} aria-expanded={on} className="group flex min-h-[72px] w-full items-center gap-3 py-6 text-left sm:gap-8">
+                  <span className="font-display text-sm text-teal-ink">0{k + 1}</span>
+                  <span className={`min-w-0 flex-1 font-display leading-tight transition ${on ? 'text-ink' : 'text-ink/70 group-hover:text-ink'}`} style={{ fontSize: 'clamp(1.45rem, 4vw, 2.75rem)' }}>{s.t}</span>
+                  <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-full border text-xl transition ${on ? 'border-ink bg-ink text-bone' : 'border-ink/25 group-hover:border-ink'}`} aria-hidden><span className={`transition-transform duration-300 ${on ? 'rotate-45' : ''}`}>+</span></span>
                 </button>
                 <div className={`grid transition-all duration-500 ${on ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                   <div className="overflow-hidden">
@@ -394,13 +415,13 @@ function Process() {
           <h2 className="h2 mt-4 max-w-3xl">{c.process.title}</h2>
         </Reveal>
         <Reveal className="relative mt-14">
-          <span aria-hidden className="timeline-line absolute left-[11px] top-2 h-[calc(100%-1rem)] w-px bg-teal lg:left-0 lg:top-[11px] lg:h-px lg:w-full" />
-          <ol className="grid gap-10 lg:grid-cols-4 lg:gap-8">
+          <span aria-hidden className="timeline-line absolute left-[11px] top-2 h-[calc(100%-1rem)] w-px bg-teal md:hidden lg:left-0 lg:top-[11px] lg:block lg:h-px lg:w-full" />
+          <ol className="grid gap-10 md:grid-cols-2 md:gap-x-12 lg:grid-cols-4 lg:gap-8">
             {c.process.steps.map(([t, d], k) => (
               <li key={t} className="relative pl-12 lg:pl-0 lg:pt-12">
                 <span className="absolute left-0 top-0 grid h-6 w-6 place-items-center rounded-full border border-teal bg-ink text-[10px] font-bold text-teal">{k + 1}</span>
                 <h3 className="font-display text-2xl">{t}</h3>
-                <p className="mt-2 max-w-xs text-sm leading-relaxed text-bone/65">{d}</p>
+                <p className="mt-2 max-w-xs text-sm leading-relaxed text-bone/70">{d}</p>
               </li>
             ))}
           </ol>
@@ -423,18 +444,18 @@ function Studio() {
         </Reveal>
         <div className="lg:col-span-6 lg:col-start-7">
           <Reveal>
-            <p className="kicker !text-teal-deep">{c.studio.kicker}</p>
+            <p className="kicker !text-teal-ink">{c.studio.kicker}</p>
             <h2 className="h2 mt-4">{c.studio.title}</h2>
             <p className="mt-6 text-[15.5px] leading-relaxed text-ink/70">{c.studio.p1}</p>
             <p className="mt-4 text-[15.5px] leading-relaxed text-ink/70">{c.studio.p2}</p>
           </Reveal>
           <Reveal className="mt-10">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-ink/50">{c.studio.teamLabel}</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-ink/70">{c.studio.teamLabel}</p>
             <ul className="mt-3 grid grid-cols-1 border-t border-ink/15 sm:grid-cols-2 sm:gap-x-8">
               {c.studio.team.map(([n, r]) => (
                 <li key={n} className="flex items-baseline justify-between gap-3 border-b border-ink/15 py-3">
                   <span className="font-display text-lg">{n}</span>
-                  <span className="text-right text-xs text-ink/55">{r}</span>
+                  <span className="text-right text-xs text-ink/70">{r}</span>
                 </li>
               ))}
             </ul>
@@ -515,14 +536,22 @@ function Footer() {
   return (
     <footer className="border-t border-white/5 bg-ink pb-28 pt-12 sm:pb-12">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <div><Logo small /><p className="mt-3 font-display italic text-bone/60">{c.footer.tagline}</p></div>
-          <p className="text-xs text-mist">{c.footer.credit}</p>
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-12">
+          <div className="lg:col-span-4"><Logo small /><p className="mt-3 font-display italic text-bone/70">{c.footer.tagline}</p></div>
+          <ul className="space-y-2 text-sm text-bone/75 lg:col-span-5">
+            <li><a href={`tel:${PHONE.replace(/[^+\d]/g, '')}`} className="inline-flex min-h-[32px] items-center hover:text-teal">{PHONE}</a></li>
+            <li><a href={`mailto:${EMAIL}`} className="inline-flex min-h-[32px] items-center break-all hover:text-teal">{EMAIL}</a></li>
+            <li><a href={MAPS} target="_blank" rel="noopener" className="inline-flex min-h-[32px] items-center hover:text-teal">Menara 2, KL Eco City, Kuala Lumpur ↗</a></li>
+          </ul>
+          <div className="flex items-start sm:justify-end lg:col-span-3">
+            <a href="#top" className="tap inline-flex items-center gap-2 rounded-full border border-white/15 px-5 text-sm font-semibold transition hover:border-teal hover:text-teal">{c.footer.toTop} <span aria-hidden>↑</span></a>
+          </div>
         </div>
         <div className="mt-8 flex flex-col gap-3 rounded-2xl border border-dashed border-white/15 p-5 text-sm text-bone/70 sm:flex-row sm:items-center sm:justify-between">
           <p>{c.footer.pitch}</p>
           <a href={PITCH_WA} target="_blank" rel="noopener" className="tap inline-flex shrink-0 items-center gap-2 font-semibold text-teal hover:text-bone"><WaIcon className="h-4 w-4" /> {c.footer.pitchLink}</a>
         </div>
+        <p className="mt-6 text-xs text-mist">{c.footer.credit}</p>
       </div>
     </footer>
   )
@@ -539,16 +568,17 @@ function Fab() {
   }, [])
   return (
     <a href={wa(c.contact.waText)} target="_blank" rel="noopener" aria-label={c.contact.wa} aria-hidden={!show} tabIndex={show ? 0 : -1}
-      className={`fixed bottom-5 right-5 z-30 grid h-14 w-14 place-items-center rounded-full bg-teal text-ink shadow-[0_10px_30px_rgba(60,196,210,.35)] transition duration-300 sm:hidden ${show ? 'opacity-100' : 'pointer-events-none translate-y-4 opacity-0'}`}>
+      data-fab className={`fixed bottom-5 right-5 z-30 grid h-14 w-14 place-items-center rounded-full bg-teal text-ink shadow-[0_10px_30px_rgba(60,196,210,.35)] transition duration-300 sm:hidden ${show ? 'opacity-100' : 'pointer-events-none translate-y-4 opacity-0'}`}>
       <WaIcon className="h-6 w-6" />
     </a>
   )
 }
 
 export default function App() {
+  const { c } = useC()
   return (
     <>
-      <a href="#projects" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-teal focus:px-4 focus:py-2 focus:text-ink">Skip</a>
+      <a href="#projects" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-teal focus:px-4 focus:py-2 focus:text-ink">{c.a11y.skip}</a>
       <Header />
       <main>
         <Hero />

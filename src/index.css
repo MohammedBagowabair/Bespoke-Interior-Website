@@ -62,3 +62,12 @@ details[open] .faq-icon { transform: rotate(45deg); }
   .reveal { opacity: 1; transform: none; }
   .marquee { animation: none; flex-wrap: wrap; width: auto; }
 }
+
+/* polish pass */
+h1, h2, h3, .h2 { text-wrap: balance; }
+p, li, dd, summary, blockquote { text-wrap: pretty; }
+.nav-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: 6px; height: 1px; background: #3CC4D2; transform: scaleX(0); transform-origin: left; transition: transform .35s cubic-bezier(.2,.7,.2,1); }
+.nav-link:hover::after, .nav-link[aria-current]::after { transform: scaleX(1); }
+.has-dialog [data-fab] { opacity: 0 !important; pointer-events: none !important; }
+summary { cursor: pointer; }
+summary:hover .faq-icon { border-color: #3CC4D2; }

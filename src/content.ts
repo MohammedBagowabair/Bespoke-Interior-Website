@@ -23,9 +23,14 @@ export const clients = ['GSK', 'TDCX', 'Roche', 'Cushman & Wakefield', 'PPUM', '
 
 const en = {
   nav: { sectors: 'Sectors', projects: 'Projects', services: 'Services', process: 'Process', studio: 'Studio', contact: 'Contact' },
+  meta: {
+    title: 'Bespoke Interior | Office, Clinic, Hotel & F&B Interiors in Kuala Lumpur',
+    desc: 'Interior design & build, consultation and corporate project management for offices, medical centres, hotels, retail and F&B. KL Eco City, Kuala Lumpur.',
+  },
   langLabel: 'BM',
-  langAria: 'Tukar ke Bahasa Melayu',
+  langAria: 'BM, tukar ke Bahasa Melayu',
   menu: 'Menu', close: 'Close',
+  a11y: { skip: 'Skip to projects', main: 'Main', mobile: 'Mobile menu', filter: 'Filter projects by sector', prev: 'Previous project', next: 'Next project', toTop: 'Back to top' },
   hero: {
     eyebrow: 'Interior design & build · KL Eco City',
     title1: 'Interiors built around',
@@ -70,6 +75,10 @@ const en = {
     sheetClient: 'Client',
     sheetCta: 'Discuss a similar project',
     sheetWa: 'Hi Bespoke Interior, I saw your project "{p}" and would like to discuss something similar.',
+    ctaTitle: 'Planning a similar space?',
+    ctaText: 'Tell us the location, floor area and timeline. We will reply on WhatsApp.',
+    ctaBtn: 'Discuss on WhatsApp',
+    count: '{n} of {t}',
   },
   services: {
     kicker: 'Services',
@@ -124,16 +133,22 @@ const en = {
     pitch: 'Website concept prepared for this studio. Not an official site yet — open to making it yours.',
     pitchLink: 'Talk to the designer',
     credit: 'Project photography © Bespoke Interior.',
+    toTop: 'Back to top',
   },
 }
 
 export type Content = typeof en
 
 const ms: Content = {
-  nav: { sectors: 'Sektor', projects: 'Projek', services: 'Servis', process: 'Proses', studio: 'Studio', contact: 'Hubungi' },
+  nav: { sectors: 'Sektor', projects: 'Projek', services: 'Perkhidmatan', process: 'Proses', studio: 'Studio', contact: 'Hubungi' },
+  meta: {
+    title: 'Bespoke Interior | Reka Bentuk Dalaman Pejabat, Klinik, Hotel & F&B di Kuala Lumpur',
+    desc: 'Reka bentuk & bina dalaman, perundingan dan pengurusan projek korporat untuk pejabat, pusat perubatan, hotel, runcit dan F&B. KL Eco City, Kuala Lumpur.',
+  },
   langLabel: 'EN',
-  langAria: 'Switch to English',
+  langAria: 'EN, switch to English',
   menu: 'Menu', close: 'Tutup',
+  a11y: { skip: 'Langkau ke projek', main: 'Navigasi utama', mobile: 'Menu mudah alih', filter: 'Tapis projek mengikut sektor', prev: 'Projek sebelumnya', next: 'Projek seterusnya', toTop: 'Kembali ke atas' },
   hero: {
     eyebrow: 'Reka bentuk & bina dalaman · KL Eco City',
     title1: 'Ruang dalaman dibina',
@@ -147,7 +162,7 @@ const ms: Content = {
   },
   sectorNames: { corporate: 'Korporat', medical: 'Perubatan', hotel: 'Hotel', fnb: 'F&B' },
   stats: [
-    { k: '9', v: 'sektor diurus' },
+    { k: '9', v: 'sektor diceburi' },
     { k: '1', v: 'titik hubungan' },
     { k: '5.0', v: 'penarafan Google' },
   ],
@@ -157,8 +172,8 @@ const ms: Content = {
     title: 'Satu studio, sembilan jenis ruang.',
     lead: 'Kami bermula dengan rumah kediaman, kemudian berkembang ke projek komersial dan korporat yang kini menjadi kekuatan kami. Setiap sektor ada peraturannya — kami memahaminya.',
     items: [
-      ['Pejabat korporat', 'Ruang kerja yang membawa jenama anda dan menyokong cara pasukan sebenarnya bekerja.'],
-      ['Komersial', 'Ruang sewaan dan perkongsian yang dirancang untuk fleksibel dan tahan lama.'],
+      ['Pejabat korporat', 'Ruang kerja yang membawa identiti jenama anda dan menyokong cara pasukan sebenarnya bekerja.'],
+      ['Komersial', 'Ruang sewaan dan ruang kongsi yang dirancang supaya fleksibel dan tahan lama.'],
       ['Runcit', 'Susun atur yang memandu pelanggan dan menonjolkan produk.'],
       ['F&B', 'Kafe dan restoran yang cekap di belakang kaunter dan menarik di hadapannya.'],
       ['Cawangan bank', 'Dewan pelanggan yang selamat, teratur dan mesra.'],
@@ -177,15 +192,19 @@ const ms: Content = {
     sheetSector: 'Sektor',
     sheetClient: 'Pelanggan',
     sheetCta: 'Bincang projek serupa',
-    sheetWa: 'Hai Bespoke Interior, saya melihat projek "{p}" dan ingin berbincang tentang projek yang serupa.',
+    sheetWa: 'Hai Bespoke Interior, saya telah melihat projek "{p}" dan ingin berbincang tentang projek yang serupa.',
+    ctaTitle: 'Merancang ruang yang serupa?',
+    ctaText: 'Kongsi lokasi, keluasan lantai dan jadual anda. Kami akan membalas di WhatsApp.',
+    ctaBtn: 'Bincang di WhatsApp',
+    count: '{n} daripada {t}',
   },
   services: {
-    kicker: 'Servis',
+    kicker: 'Perkhidmatan',
     title: 'Tiga cara bekerja dengan kami.',
     items: [
-      { t: 'Reka & Bina', d: 'Reka bentuk dan pembinaan di bawah satu bumbung. Pereka dan pembina kami bekerja seiring, jadi apa yang dilukis itulah yang dibina — hasil turnkey yang padu dengan satu pasukan bertanggungjawab.', tags: ['Turnkey', 'Satu kontrak', 'Kemasan dalaman'] },
+      { t: 'Reka & Bina', d: 'Reka bentuk dan pembinaan di bawah satu bumbung. Pereka dan pembina kami bekerja seiring, jadi apa yang dilukis itulah yang dibina — hasil siap guna (turnkey) yang padu, dengan satu pasukan yang bertanggungjawab.', tags: ['Siap guna', 'Satu kontrak', 'Kemasan dalaman'] },
       { t: 'Perundingan Dalaman', d: 'Kami mengkaji cara anda menggunakan ruang, kemudian mencadangkan susun atur, reka bentuk dan fungsi yang sesuai — penyelesaian khas yang mencerminkan jenama atau citarasa anda.', tags: ['Perancangan ruang', 'Konsep', 'Susun atur'] },
-      { t: 'Pengurusan Projek Korporat', d: 'Untuk pejabat, runcit, F&B, bank, klinik dan hotel: pengurus projek berpengalaman memantau perancangan, reka bentuk, pembinaan dan pemeriksaan akhir.', tags: ['Perancangan', 'Koordinasi tapak', 'Serahan'] },
+      { t: 'Pengurusan Projek Korporat', d: 'Untuk pejabat, runcit, F&B, bank, klinik dan hotel: pengurus projek berpengalaman memantau perancangan, reka bentuk, pembinaan dan pemeriksaan akhir.', tags: ['Perancangan', 'Penyelarasan tapak', 'Serahan kunci'] },
     ],
   },
   process: {
@@ -201,18 +220,18 @@ const ms: Content = {
   studio: {
     kicker: 'Studio',
     title: 'Pereka dan pengurus projek, dalam satu pasukan.',
-    p1: 'Bespoke Interior bermula dengan projek kediaman dan cepat menyedari keperluan reka bentuk profesional dalam dunia komersial dan korporat. Kini pasukan pereka dan pengurus projek kami mengendalikan ruang kerja, penjagaan kesihatan, hospitaliti dan F&B di sekitar Lembah Klang.',
-    p2: 'Setiap projek bermula dengan pandangan baharu. Kami meluangkan masa memahami keperluan anda, kemudian menjadikannya ruang yang berfungsi, menarik dan setia kepada jenama anda.',
+    p1: 'Bespoke Interior bermula dengan projek kediaman dan tidak lama kemudian melihat keperluan reka bentuk profesional dalam dunia komersial dan korporat. Kini pasukan pereka dan pengurus projek kami mengendalikan ruang kerja, penjagaan kesihatan, hospitaliti dan F&B di sekitar Lembah Klang.',
+    p2: 'Setiap projek bermula dengan pandangan baharu. Kami meluangkan masa memahami keperluan anda, kemudian menjadikannya ruang yang berfungsi, menarik dan selari dengan jenama anda.',
     teamLabel: 'Pasukan',
     team: [['Sherman Ho', 'Pereka Dalaman Kanan'], ['Zack', 'Pereka Dalaman Kanan'], ['Reezan', 'Pembangunan Perniagaan'], ['Shah Rasih', 'Pembangunan Perniagaan'], ['Salleh Sani', 'Pemasaran'], ['Lori Harvey', 'Akauntan Eksekutif']],
   },
   faq: {
     kicker: 'Soalan lazim',
-    title: 'Soalan yang baik.',
+    title: 'Soalan yang sering ditanya.',
     items: [
       ['Adakah anda hanya mereka pejabat?', 'Tidak. Selain pejabat korporat, kami mengendalikan projek komersial, runcit, F&B, cawangan bank, pusat perubatan, hotel, kediaman dan kilang.'],
-      ['Bolehkah anda uruskan reka bentuk dan pembinaan sekali?', 'Boleh. Servis Reka & Bina kami adalah turnkey — satu pasukan dan satu titik hubungan dari reka bentuk hingga siap.'],
-      ['Adakah anda menawarkan perundingan sahaja?', 'Ya. Servis Perundingan Dalaman kami memberi nasihat pakar tentang reka bentuk, susun atur dan fungsi, sebelum anda komited kepada pembinaan penuh.'],
+      ['Bolehkah anda uruskan reka bentuk dan pembinaan sekali?', 'Boleh. Perkhidmatan Reka & Bina kami ialah penyelesaian siap guna (turnkey) — satu pasukan dan satu titik hubungan dari reka bentuk hingga siap.'],
+      ['Adakah anda menawarkan perundingan sahaja?', 'Ya. Perkhidmatan Perundingan Dalaman kami memberi nasihat pakar tentang reka bentuk, susun atur dan fungsi, sebelum anda memutuskan untuk pembinaan penuh.'],
       ['Di manakah studio anda?', 'Aras 19, Boutique Office 1 (B-01-D), Menara 2, KL Eco City, Jalan Bangsar, Kuala Lumpur.'],
       ['Bagaimana untuk bermula?', 'Hantar WhatsApp atau e-mel bersama lokasi, anggaran keluasan lantai dan sasaran jadual anda, dan kami akan mengatur sesi perundingan.'],
     ],
@@ -232,6 +251,7 @@ const ms: Content = {
     pitch: 'Konsep laman web disediakan untuk studio ini. Bukan laman rasmi lagi — sedia dijadikan milik anda.',
     pitchLink: 'Hubungi pereka',
     credit: 'Fotografi projek © Bespoke Interior.',
+    toTop: 'Kembali ke atas',
   },
 }
 

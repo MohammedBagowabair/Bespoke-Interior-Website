@@ -9,7 +9,7 @@ export default {
         slate2: '#222932',
         bone: '#F2EFE9',
         mist: '#9BA4AE',
-        teal: { DEFAULT: '#3CC4D2', deep: '#1E8E9A', soft: '#BDEBF0' },
+        teal: { DEFAULT: '#3CC4D2', deep: '#1E8E9A', ink: '#0F6670', soft: '#BDEBF0' },
       },
       fontFamily: {
         display: ['"Bodoni Moda"', 'Didot', 'Georgia', 'serif'],
